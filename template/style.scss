@@ -28,6 +28,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: $font-title;
 }
 h1, h2 { color: $text-dark; }
+h3 { color: $tertiary; }
 li { margin-bottom: .25em; };
 pre, code {
   text-align: left;
@@ -340,4 +341,22 @@ blockquote {
   border-radius: 50%;
   opacity: 0.8;
   padding: 0.7rem 0.9rem;
+}
+
+.table {
+  table {
+    border-collapse: collapse;
+  }
+
+  th {
+    background-color: #fafafa;
+  }
+
+  td {
+  }
+
+  th, td {
+    padding: 16px;
+    border: 1px solid #eee;
+  }
 }
