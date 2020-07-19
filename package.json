@@ -1,0 +1,12 @@
+{
+  "name": "talk-microfrontends-serverside-integration",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "backslide": "*",
+    "decktape": "^3.0.0"
+  },
+  "author": "Mario Fernandez",
+  "license": "MIT"
+}
