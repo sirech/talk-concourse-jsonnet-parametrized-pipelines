@@ -26,30 +26,36 @@ class: transition
 class: impact
 
 .impact-wrapper[
-## A problem to solve
+# A problem to solve
 ]
 
 ---
 
-infrastructure pipelines
+class: center middle
+
+## Provisioning a ton of infrastructure
 
 ---
 
-## comprehensive
+class: center middle
+
+## Comprehensive
 ### multiple environments
 ### multiple regions
 ### many modules
 
 ---
 
-multiple products
+class: center middle
+
+## Multiple products
 
 ---
 
 class: impact
 
 .impact-wrapper[
-## The issue
+# The issue
 ]
 
 ---
@@ -112,11 +118,50 @@ class: center middle
 
 ---
 
+class: center middle
+
+```yaml
+  - in_parallel:
+    - task: lint-sh
+      image: dev-container
+      params:
+*       <<: *common-params
+        TARGET: sh
+      file: git/pipeline/tasks/linter/task.yml
+```
+
+---
+
+class: center middle
+
+```yaml
+  - in_parallel:
+    - task: lint-sh
+      image: dev-container
+      params:
+        <<: *common-params
+*       TARGET: sh
+      file: git/pipeline/tasks/linter/task.yml
+```
+
+---
+
+class: center middle
+
+## YAML overdose!
+
+---
 class: impact
 
 .impact-wrapper[
-## What are our options?
+# What are our options?
 ]
+
+---
+
+class: center middle
+
+## Dare I say, templating?
 
 ---
 
@@ -138,10 +183,16 @@ class: center middle
 
 ---
 
+class: center middle
+
+> We recommend using an API from a programming language, or, a templating system
+
+---
+
 class: impact
 
 .impact-wrapper[
-## Jsonnet
+# Jsonnet
 ]
 
 ---
@@ -154,22 +205,26 @@ class: center middle
 
 class: center middle
 
-> A data templating language for app and tool developers
+## A data templating language for app and tool developers
 
 ---
 
-output json
+class: center middle
+
+![jsonnet](./images/jsonnet.png)
 
 ---
 
-functions
+class: center middle
+
+## YAML happens to be a superset of JSON
 
 ---
 
 class: impact
 
 .impact-wrapper[
-## Utility functions
+# Utility functions
 ]
 
 ---
@@ -227,6 +282,22 @@ class: center middle
 
 ---
 
+class: impact
+
+.impact-wrapper[
+# Building your own DSL
+]
+
+---
+
+own blocks
+
+---
+
+helpers
+
+---
+
 class: center middle
 
 ## Back to the original example
@@ -273,23 +344,7 @@ concourse.Job('lint', plan = [
 class: impact
 
 .impact-wrapper[
-## Building your own DSL
-]
-
----
-
-own blocks
-
----
-
-helpers
-
----
-
-class: impact
-
-.impact-wrapper[
-## Scaling up to multiple pipelines
+# Scaling up to multiple pipelines
 ]
 
 ---
@@ -349,7 +404,7 @@ accounts:
 class: impact
 
 .impact-wrapper[
-## Some results
+# Some results
 ]
 
 ---
@@ -403,5 +458,11 @@ class: center middle
 | environments.libsonnet | 19 |
 ]
 ]
+
+---
+
+class: center middle
+
+### hceris.com/templating-concourse-pipelines-with-jsonnet/
 
 ---
