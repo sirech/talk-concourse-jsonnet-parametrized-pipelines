@@ -1,4 +1,4 @@
-title: Building Pipelines in Concourse using jsonnet
+title: Building pipelines in Concourse using jsonnet
 class: animation-fade
 layout: true
 
@@ -12,6 +12,15 @@ class: impact full-width
 .impact-wrapper[
 # {{title}}
 ]
+
+???
+
+I want to talk about our experience pushing pipelines as code to the limit
+
+- Concourse
+- jsonnet
+
+Main idea: abstracting the complexity behind delivery pipelines
 
 ---
 
@@ -29,11 +38,56 @@ class: impact
 # A problem to solve
 ]
 
+???
+
+Our project is very infrastructure-heavy
+
 ---
 
 class: center middle
 
 ## Provisioning a ton of infrastructure
+
+![terraform](./images/terraform.png)
+
+???
+
+Platform team for enabling others into the cloud
+
+---
+
+class: center middle
+
+```
+modules
+├── access-from-other-accounts
+├── access-to-other-accounts
+├── application-environment-1
+├── application-environment-2
+├── cluster-{backup,management}
+├── connected-hosted-zone
+├── dispatcher-vpc
+├── domain
+├── functional-area
+├── functional-area-{access,runtime}
+├── logging
+├── monitoring
+├── operations
+├── private-egress
+├── private-egress-acme
+├── private-ingress-{app,dispatcher}
+└── system-services
+```
+
+???
+
+When I say a lot of infrastructure I really mean it. Had to squeeze this quite a bit to fit
+
+Some of these modules are *really* big
+
+- provisioning EKS
+- setting up a complete ELK stack
+- prometheus / grafana / alerting
 
 ---
 
@@ -42,13 +96,33 @@ class: center middle
 ## Comprehensive
 ### multiple environments
 ### multiple regions
-### many modules
+
+???
+
+- Automotive loves its environments
+- Europe + US -> China and Korea incoming
 
 ---
 
 class: center middle
 
 ## Multiple products
+
+???
+
+We create and own this for many other teams
+
+---
+
+class: center middle
+
+![concourse](./images/concourse.png)
+
+### thoughtworks.com/radar/techniques/pipelines-for-infrastructure-as-code
+
+???
+
+Our dirty little secret is that we used to manage it by hand. We realized the futility and started building infra pipelines for it
 
 ---
 
@@ -76,10 +150,18 @@ class: center middle
 
 ## Concourse doesn't help, either
 
+???
+
+Concourse has very explicit definitions of the dependencies between jobs and tasks and resources
+
 ---
 class: center middle
 
 ![job](./images/job.png)
+
+???
+
+This is a linter task for sh, docker, js and shell.
 
 ---
 
@@ -106,9 +188,9 @@ class: center middle
 
 ???
 
-This is a linter task for sh, docker, js and shell.
-
 I had to cut out most of it
+
+Each linter is a similar block with a different `TARGET`
 
 ---
 
@@ -130,6 +212,10 @@ class: center middle
       file: git/pipeline/tasks/linter/task.yml
 ```
 
+???
+
+Anchors to reuse blocks
+
 ---
 
 class: center middle
@@ -144,11 +230,21 @@ class: center middle
       file: git/pipeline/tasks/linter/task.yml
 ```
 
+???
+
+Passing parameters to our tasks so that we can reuse the scripts
+
 ---
 
 class: center middle
 
 ## YAML overdose!
+
+???
+
+We tried and the sheer weight of the YAML was too much
+
+Refactorings become really hard
 
 ---
 class: impact
@@ -169,11 +265,23 @@ class: center middle
 
 ![options](./images/options.png)
 
+???
+
+3 buckets
+
+- ad-hoc tools
+- dedicated templating languages
+- a full-blown programming language
+
 ---
 
 class: center middle
 
 ![options-rejected](./images/options-rejected.png)
+
+???
+
+One of my painfully learned lessons while being at TW: Don't use ad-hoc tools for this
 
 ---
 
@@ -224,61 +332,83 @@ class: center middle
 class: impact
 
 .impact-wrapper[
-# Utility functions
+# Abstracting building blocks
 ]
 
----
+???
 
-class: center middle
+Three steps
 
-```javascript
-{
-  Parallel(tasks):: {
-    in_parallel: tasks
-  }
-}
-```
+- abstract the structure of a pipeline
+- build a DSL
+- scale it up
 
 ---
 
 class: center middle
 
-```javascript
-{
-  Job(name, serial = true, plan = []):: std.prune({
-    name: name,
-    serial: serial,
-    plan: plan
-  })
+```python
+local Parallel(tasks) = {
+  in_parallel: tasks
 }
 ```
 
+???
+
+- Think of it as a mixture of _JSON_ and _Python_
+- A function that receives one argument and returns a json object with this shape
+
 ---
+
+class: center middle
+
+```python
+local Job(name, serial = true, plan = []) = std.prune({
+  name: name,
+  serial: serial,
+  plan: plan
+})
+```
+
+???
+
+- default arguments
+- very helpful standard library
+
+---
+
 class: center middle
 
 ```javascript
-{
-  DockerResource(name, 
-                 repository, 
-                 tag = 'latest', allow_insecure = false):: {
-    name: name,
-    type: 'docker-image',
-    source: {
-      repository: repository,
-      tag: tag
-    } + (
-      if allow_insecure then { 
-        insecure_registries: [std.split(repository, '/')[0]]} else {}
-    ),
-  }
+DockerResource(name,
+               repository,
+               tag = 'latest', allow_insecure = false) = {
+  name: name,
+  type: 'docker-image',
+  source: {
+    repository: repository,
+    tag: tag
+  } + (
+    if allow_insecure then {
+      insecure_registries: [std.split(repository, '/')[0]]} else {}
+  ),
 }
 ```
+
+???
+
+- nested objects
+- conditionals
 
 ---
 
 class: center middle
 
 ### github.com/sirech/concourse-jsonnet-utils
+
+???
+
+You can write tests to prove that your helpers output what you want
 
 ---
 
@@ -288,13 +418,49 @@ class: impact
 # Building your own DSL
 ]
 
+???
+
+First step is to represent the building blocks as helper functions, which removes quite a bit of YAML weight
+
+Next step, a DSL for your own context
+
 ---
 
-own blocks
+class: center middle
+
+## Reflect your conventions and idioms in code
+
+???
+
+The previous helpers don't make assumptions about the way you build pipelines
+
+You **should** in fact have plenty of conventions
 
 ---
 
-helpers
+class: center middle
+
+```python
+local source = 'git';
+local container = 'dev-container';
+
+local Inputs(dependencies = []) = concourse.Parallel(
+  [concourse.Get(s, dependencies = dependencies) 
+    for s in [source, container]]
+);
+```
+---
+
+class: center middle
+
+```python
+local Task(name, file = name, image = container, params = {}) = {
+  task: name,
+  image: image,
+  params: { CI: true } + params,
+  file: '%s/pipeline/tasks/%s/task.yml' % [source, file]
+};
+```
 
 ---
 
@@ -339,6 +505,18 @@ concourse.Job('lint', plan = [
 ]),
 ```
 
+???
+
+List comprehensions provide a declarative way of looping
+
+Counting the helpers, similar amount of code. But, once you have enough helpers, you leverage them across the entire pipeline(s)
+
+---
+
+class: center middle
+
+### github.com/sirech/example-concourse-pipeline
+
 ---
 
 class: impact
@@ -379,6 +557,12 @@ CONFIG="$(yq -r '. * .' ../product_defaults.yaml product.yaml \
          | jq -s 'add')"
 ```
 
+???
+
+Usually you would load some JSON config
+
+With some trickery, you can use YAML as well
+
 ---
 
 class: center middle
@@ -398,6 +582,13 @@ accounts:
   test: "product"
   prod: "product-prod"
 ```
+
+???
+
+One pipeline definition
+
+Multiple product definitions that specify the different options
+
 
 ---
 
