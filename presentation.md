@@ -1,4 +1,4 @@
-title: Building pipelines in Concourse using jsonnet
+title: Pipelines as Code for Infrastructure at Scale
 class: animation-fade
 layout: true
 
@@ -24,6 +24,26 @@ Main idea: abstracting the complexity behind delivery pipelines
 
 ---
 
+class: center middle
+
+## Agenda
+### A problem to solve
+### The Issue
+### What are our options?
+### Programmatic pipelines
+### Scaling up
+### Results
+### Takeaways
+
+---
+
+class: center middle
+
+## Assumption
+### You are familiar with delivery pipelines for CI/CD
+
+---
+
 class: transition
 
 ## Mario Fernandez
@@ -38,9 +58,49 @@ class: impact
 # A problem to solve
 ]
 
+---
+
+class: center middle
+
+# Enable teams to move from on-premise to the cloud
+
 ???
 
 Our project is very infrastructure-heavy
+
+---
+
+class: center middle
+
+# Layer on top of AWS to provide a ready-to-use solution
+
+???
+
+Creating a PaaS, if you will
+
+---
+
+class: center middle full-height
+background-image: url(images/tech-overview.png)
+
+---
+
+class: center middle full-width
+background-image: url(images/world-map.png)
+
+---
+
+class: center middle full-width
+background-image: url(images/environments.png)
+
+???
+
+- Automotive loves its environments
+
+---
+
+class: center middle full-height
+background-image: url(images/products.png)
 
 ---
 
@@ -85,32 +145,11 @@ When I say a lot of infrastructure I really mean it. Had to squeeze this quite a
 
 Some of these modules are *really* big
 
-- provisioning EKS
-- setting up a complete ELK stack
-- prometheus / grafana / alerting
-
 ---
 
-class: center middle
+class: transition
 
-## Comprehensive
-### multiple environments
-### multiple regions
-
-???
-
-- Automotive loves its environments
-- Europe + US -> China and Korea incoming
-
----
-
-class: center middle
-
-## Multiple products
-
-???
-
-We create and own this for many other teams
+# Step One: Infrastructure Pipelines
 
 ---
 
@@ -300,8 +339,14 @@ class: center middle
 class: impact
 
 .impact-wrapper[
-# Jsonnet
+# Programmatic pipelines
 ]
+
+---
+
+class: transition
+
+# Jsonnet
 
 ---
 
@@ -329,11 +374,9 @@ class: center middle
 
 ---
 
-class: impact
+class: transition
 
-.impact-wrapper[
-# Abstracting building blocks
-]
+# Abstract building blocks
 
 ???
 
@@ -412,11 +455,9 @@ You can write tests to prove that your helpers output what you want
 
 ---
 
-class: impact
+class: transition
 
-.impact-wrapper[
 # Building your own DSL
-]
 
 ???
 
@@ -522,7 +563,7 @@ class: center middle
 class: impact
 
 .impact-wrapper[
-# Scaling up to multiple pipelines
+# Scaling up
 ]
 
 ---
@@ -629,6 +670,14 @@ background-image: url(images/final-pipeline.png)
 
 ---
 
+* TODO: picture of multiple pipelines
+
+---
+
+* TODO: picture other repos
+
+---
+
 class: center middle
 
 .col-6[
@@ -655,5 +704,24 @@ class: center middle
 class: center middle
 
 ### hceris.com/templating-concourse-pipelines-with-jsonnet/
+
+---
+
+
+class: impact
+
+.impact-wrapper[
+# Takeaways
+]
+
+---
+
+use infra pipelines
+
+---
+
+handle complexity through bespoke tools
+
+---
 
 ---
