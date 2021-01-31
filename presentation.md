@@ -29,7 +29,7 @@ class: center middle
 ## Agenda
 ### A problem to solve
 ### The Issue
-### What are our options?
+### What are the options?
 ### Programmatic pipelines
 ### Scaling up
 ### Results
@@ -40,7 +40,7 @@ class: center middle
 class: center middle
 
 ## Assumption
-### You are familiar with delivery pipelines for CI/CD
+### You are familiar with delivery pipelines and CI/CD
 
 ---
 
@@ -62,7 +62,7 @@ class: impact
 
 class: center middle
 
-# Enable teams to move from on-premise to the cloud
+## Enable teams to move from on-premise to the cloud
 
 ???
 
@@ -72,7 +72,7 @@ Our project is very infrastructure-heavy
 
 class: center middle
 
-# Layer on top of AWS to provide a ready-to-use solution
+## Layer on top of AWS to provide a ready-to-use solution
 
 ???
 
@@ -101,6 +101,11 @@ background-image: url(images/environments.png)
 
 class: center middle full-height
 background-image: url(images/products.png)
+
+---
+
+class: center middle full-width
+background-image: url(images/complexity.jpg)
 
 ---
 
@@ -149,7 +154,8 @@ Some of these modules are *really* big
 
 class: transition
 
-# Step One: Infrastructure Pipelines
+# Spoiler Alert
+## Doing it by hand did not scale
 
 ---
 
@@ -165,11 +171,31 @@ Our dirty little secret is that we used to manage it by hand. We realized the fu
 
 ---
 
+class: center middle
+
+## Apply infrastructure changes automatically
+
+---
+
+class: center middle
+
+## Small modules
+
+---
+
 class: impact
 
 .impact-wrapper[
 # The issue
 ]
+
+---
+
+class: center middle
+
+![yaml](./images/yaml.png)
+
+### thoughtworks.com/insights/blog/modernizing-your-build-pipelines
 
 ---
 
@@ -286,17 +312,28 @@ We tried and the sheer weight of the YAML was too much
 Refactorings become really hard
 
 ---
+
+class: center middle full-width
+background-image: url(images/massive-pipeline.png)
+
+---
 class: impact
 
 .impact-wrapper[
-# What are our options?
+# What are the options?
 ]
 
 ---
 
 class: center middle
 
-## Dare I say, templating?
+## It was clear we needed a way to programmatically generate parts of the pipeline
+
+---
+
+class: center middle
+
+## Three approaches
 
 ---
 
@@ -341,6 +378,32 @@ class: impact
 .impact-wrapper[
 # Programmatic pipelines
 ]
+
+---
+
+class: center middle
+
+## Generate most of the pipeline automatically
+
+---
+
+class: center middle
+
+## Handle duplication through a parametrized approach
+
+---
+
+class: transition
+
+# Infrastructure modules
+
+---
+
+TODO: what is an infra module
+
+---
+
+TODO: example module
 
 ---
 
@@ -630,7 +693,6 @@ One pipeline definition
 
 Multiple product definitions that specify the different options
 
-
 ---
 
 class: impact
@@ -716,11 +778,21 @@ class: impact
 
 ---
 
-use infra pipelines
+class: center middle
+
+# Use Infrastructure as Code
 
 ---
 
-handle complexity through bespoke tools
+class: center middle
+
+# Use Infrastructure Pipelines
+
+---
+
+class: center middle
+
+# Invest in your tooling
 
 ---
 
