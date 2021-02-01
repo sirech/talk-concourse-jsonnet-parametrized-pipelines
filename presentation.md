@@ -13,6 +13,20 @@ class: impact full-width
 # {{title}}
 ]
 
+---
+
+class: center middle
+
+## Pipelines as Code
+
+--
+
+## for Infrastructure
+
+--
+
+## at Scale
+
 ???
 
 I want to talk about our experience pushing pipelines as code to the limit
@@ -28,19 +42,13 @@ class: center middle
 
 ## Agenda
 ### A problem to solve
+### An attempt
 ### The Issue
 ### What are the options?
 ### Programmatic pipelines
 ### Scaling up
 ### Results
 ### Takeaways
-
----
-
-class: center middle
-
-## Assumption
-### You are familiar with delivery pipelines and CI/CD
 
 ---
 
@@ -57,6 +65,12 @@ class: impact
 .impact-wrapper[
 # A problem to solve
 ]
+
+---
+
+class: center middle
+
+## Building our own PaaS
 
 ---
 
@@ -109,6 +123,14 @@ background-image: url(images/complexity.jpg)
 
 ---
 
+class: impact full-width
+
+.impact-wrapper[
+# An attempt
+]
+
+---
+
 class: center middle
 
 ## Provisioning a ton of infrastructure
@@ -123,10 +145,9 @@ Platform team for enabling others into the cloud
 
 class: center middle
 
-```
+```console
 modules
 ├── access-from-other-accounts
-├── access-to-other-accounts
 ├── application-environment-1
 ├── application-environment-2
 ├── cluster-{backup,management}
@@ -139,7 +160,6 @@ modules
 ├── monitoring
 ├── operations
 ├── private-egress
-├── private-egress-acme
 ├── private-ingress-{app,dispatcher}
 └── system-services
 ```
@@ -149,6 +169,47 @@ modules
 When I say a lot of infrastructure I really mean it. Had to squeeze this quite a bit to fit
 
 Some of these modules are *really* big
+
+---
+
+class: center middle
+
+```console
+modules/
+├── access-from-other-accounts
+│   ├── dependencies.tf
+│   ├── locals.tf
+│   ├── main.tf
+│   ├── outputs.tf
+│   ├── providers.tf
+│   └── variables.tf
+├── application-environment-1
+│   ├── data.tf
+│   ├── locals.tf
+│   ├── main.tf
+│   ├── outputs.tf
+│   ├── providers.tf
+│   └── variables.tf
+└── tracing
+```
+
+---
+
+class: center middle
+
+```console
+[terragrunt] 2021/02/01 20:28:39 Executing hook: tflint
+[terragrunt] 2021/02/01 20:28:39 Running command: tflint
+[terragrunt] 2021/02/01 20:28:40 Running command: terraform apply
+module.aws_vpc.module.vpc.aws_subnet.private[2]: Refreshing state..
+module.aws_vpc.module.vpc.aws_vpc.this[0]: Refreshing state..
+module.aws_vpc.module.vpc.aws_subnet.private[0]: Refreshing state..
+module.aws_vpc.module.vpc.aws_subnet.private[1]: Refreshing state..
+module.aws_vpc.module.vpc.aws_vpc.this[0]: Refreshing state..
+module.aws_eks.data.aws_region.current: Refreshing state..
+
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+```
 
 ---
 
@@ -183,19 +244,22 @@ class: center middle
 
 ---
 
+class: center middle
+
+## Pipeline is an orchestrator of existing scripts
+
+---
+
+class: center middle full-width
+background-image: url(images/pipeline.png)
+
+---
+
 class: impact
 
 .impact-wrapper[
 # The issue
 ]
-
----
-
-class: center middle
-
-![yaml](./images/yaml.png)
-
-### thoughtworks.com/insights/blog/modernizing-your-build-pipelines
 
 ---
 
@@ -220,9 +284,9 @@ class: center middle
 Concourse has very explicit definitions of the dependencies between jobs and tasks and resources
 
 ---
-class: center middle
 
-![job](./images/job.png)
+class: center middle full-width
+background-image: url(images/job.png)
 
 ???
 
@@ -301,6 +365,18 @@ Passing parameters to our tasks so that we can reuse the scripts
 
 ---
 
+TODO -> more explicit about anchor blocks?
+
+---
+
+class: center middle
+
+## Now, imagine
+### Multiple environments
+### Multiple regions
+
+---
+
 class: center middle
 
 ## YAML overdose!
@@ -327,7 +403,7 @@ class: impact
 
 class: center middle
 
-## It was clear we needed a way to programmatically generate parts of the pipeline
+## Something on top of YAML
 
 ---
 
@@ -395,20 +471,6 @@ class: center middle
 
 class: transition
 
-# Infrastructure modules
-
----
-
-TODO: what is an infra module
-
----
-
-TODO: example module
-
----
-
-class: transition
-
 # Jsonnet
 
 ---
@@ -448,6 +510,11 @@ Three steps
 - abstract the structure of a pipeline
 - build a DSL
 - scale it up
+
+---
+
+class: center middle full-width
+background-image: url(images/job-blocks.png)
 
 ---
 
@@ -692,6 +759,10 @@ accounts:
 One pipeline definition
 
 Multiple product definitions that specify the different options
+
+---
+
+- TODO -> this transition is a bit too abrupt
 
 ---
 
