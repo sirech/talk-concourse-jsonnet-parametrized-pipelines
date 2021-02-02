@@ -727,6 +727,35 @@ class: center middle
 
 class: center middle
 
+```yaml
+product_name: new-product
+version: master
+
+clusters:
+  test:
+    eu-west-1:
+  prod:
+    eu-west-1:
+    us-east-1:
+
+nodes:
+  test:
+    instance_type: "m5.large"
+  prod:
+    instance_type: "c5.2xlarge"
+```
+
+???
+
+One pipeline definition
+
+Multiple product definitions that specify the different options
+
+
+---
+
+class: center middle
+
 ```python
 local config = std.extVar('CONFIG')
 ```
@@ -751,44 +780,6 @@ With some trickery, you can use YAML as well
 
 class: center middle
 
-```yaml
-product_name: new-product
-version: master
-
-clusters:
-  test:
-    eu-west-1:
-  prod:
-    eu-west-1:
-    us-east-1:
-
-accounts:
-  test: "product"
-  prod: "product-prod"
-```
-
-???
-
-One pipeline definition
-
-Multiple product definitions that specify the different options
-
----
-
-- TODO -> this transition is a bit too abrupt
-
----
-
-class: impact
-
-.impact-wrapper[
-# Some results
-]
-
----
-
-class: center middle
-
 ```python
 local EnvironmentJobs(env) =
   local regions = std.objectFields(config.clusters[env]);
@@ -808,6 +799,21 @@ local EnvironmentJobs(env) =
         tasks=[TaskPerRegion('smoketest', regions, params)]),
   ]
 ```
+
+---
+
+class: center middle
+
+## Only works up to a certain point!
+
+---
+
+class: impact
+
+.impact-wrapper[
+# Some results
+]
+
 ---
 
 class: center middle full-width
