@@ -331,6 +331,12 @@ class: center middle
 
 class: center middle
 
+## Anchor parameters
+
+---
+
+class: center middle
+
 ```yaml
   - in_parallel:
     - task: lint-sh
@@ -341,9 +347,20 @@ class: center middle
       file: git/pipeline/tasks/linter/task.yml
 ```
 
+```yaml
+common-params: &common-params
+  CI: true
+```
+
 ???
 
 Anchors to reuse blocks
+
+---
+
+class: center middle
+
+## Parametrized tasks
 
 ---
 
@@ -362,10 +379,6 @@ class: center middle
 ???
 
 Passing parameters to our tasks so that we can reuse the scripts
-
----
-
-TODO -> more explicit about anchor blocks?
 
 ---
 
@@ -795,6 +808,15 @@ local EnvironmentJobs(env) =
         tasks=[TaskPerRegion('smoketest', regions, params)]),
   ]
 ```
+---
+
+class: center middle full-width
+background-image: url(images/job-pipeline.png)
+
+---
+
+class: center middle full-width
+background-image: url(images/environment-pipeline.png)
 
 ---
 
@@ -803,11 +825,8 @@ background-image: url(images/final-pipeline.png)
 
 ---
 
-* TODO: picture of multiple pipelines
-
----
-
-* TODO: picture other repos
+class: center middle full-width
+background-image: url(images/multiple-pipelines.png)
 
 ---
 
@@ -817,7 +836,7 @@ class: center middle
 .table[
 | Generated | LOC |
 | :------- | ---: |
-| pipeline.yaml | 3102 |
+| pipeline.yaml | 7312 |
 ]
 ]
 
@@ -825,9 +844,9 @@ class: center middle
 .table[
 | Jsonnet | LOC |
 | :------- | ----: |
-| pipeline.jsonnet | 94 |
+| pipeline.jsonnet | 102 |
 | concourse.libsonnet | 54 |
-| builders.libsonnet | 40 |
+| builders.libsonnet | 46 |
 | environments.libsonnet | 19 |
 ]
 ]
