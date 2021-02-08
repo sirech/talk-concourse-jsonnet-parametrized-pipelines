@@ -15,7 +15,7 @@ class: impact full-width
 
 ???
 
-Welcome everybody to the last session of the day, I hope you've got still some energy left. I don't think I'll take the full hour so don't worry about that.
+Welcome everybody to the last session of today, I hope you still got some energy left. I don't think I'll take the full hour so don't worry about your Feierabend.
 
 The title of this talk is Pipelines as Code for Infrastructure at Scale. There are three elements to this talk.
 
@@ -27,7 +27,7 @@ class: center middle
 
 ???
 
-The first part are pipelines as code. I believe many of you are already familiar with this.
+The first part are pipelines as code. I believe many of you are already familiar with this and use it actively in your day to day.
 
 --
 
@@ -43,7 +43,7 @@ Next are infrastructure pipelines. Provisioning infrastructure in automated pipe
 
 ???
 
-Lastly, at scale. I want to talk about the project I've been for the past year. The most unique part of this talk is the fact that at a certain scale, things become complicated. You'll see what I mean by that.
+Lastly, at scale. I want to talk about the project I've been on for the past year. The most unique part of this talk is the scale. The size of the setup that I want to show makes it different. What works at a smaller scale doesn't quite work when things get bigger.
 
 ---
 
@@ -61,7 +61,7 @@ class: center middle
 
 ???
 
-Here is a rough agenda.
+Here is a rough agenda. I want to give you some context and then go over the phases that we ourselves went in this project. And finish with some results.
 
 ---
 
@@ -70,6 +70,10 @@ class: transition
 ## Mario Fernandez
  
  **Thought**Works
+ 
+???
+ 
+something about me. I'm a consultant @ TW. We work with a bunch of big german companies, writing software together with them.
  
 ---
 
@@ -87,19 +91,11 @@ Let's start from the beginning. What was this project about?
 
 class: center middle
 
-## Building our own PaaS
+## Enable teams to move from on-premise to the cloud
 
 ???
 
 We've been at this client for the past few years. Essentially, they tasked us with building a platform as a service
-
----
-
-class: center middle
-
-## Enable teams to move from on-premise to the cloud
-
-???
 
 The idea is to allow product teams to move to the cloud safely
 
@@ -120,7 +116,11 @@ background-image: url(images/tech-overview.png)
 
 ???
 
-There are a ton of technologies and tools involved. AWS, Kubernetes, monitoring, logging, and whatnot.
+There are a ton of technologies and tools involved. 
+
+these teams want to build microservices and deploy them without having to worry too much about all the different CFRs.
+
+AWS, Kubernetes, monitoring, logging, and whatnot.
 
 ---
 
@@ -156,7 +156,7 @@ background-image: url(images/complexity.jpg)
 
 ???
 
-If the point is not clear by not, this a whole lot of complexity
+If the point is not clear by now, this a whole lot of complexity
 
 ---
 
@@ -180,7 +180,7 @@ class: center middle
 
 ???
 
-All of this is code. That is non-negotiable. A ton of terraform is needed to provision all this infrastructure
+All of this is code. That is non-negotiable. We don't provision things through UIs. Terraform is widely used within TW. A ton of terraform is needed to provision all this infrastructure
 
 ---
 
@@ -338,11 +338,19 @@ class: center middle
 
 ## YAML is really verbose
 
+???
+
+yaml is the way to represent pipelines in many CI/CD tools. And it's not a language known for being compact.
+
 ---
 
 class: center middle
 
 ## Like, really
+
+???
+
+I guess everybody has felt this. k8s is another pretty infamous example for this.
 
 ---
 
@@ -461,14 +469,6 @@ Passing parameters to our tasks so that we can reuse the scripts
 
 class: center middle
 
-## Now, imagine
-### Multiple environments
-### Multiple regions
-
----
-
-class: center middle
-
 ## YAML overdose!
 
 ???
@@ -556,6 +556,10 @@ class: center middle
 class: center middle
 
 ## Handle duplication through a parametrized approach
+
+???
+
+yaml is for us our assembler. We represent our dependency tree in a more high level construct, and it gets compiled down to that
 
 ---
 
@@ -667,6 +671,36 @@ DockerResource(name,
 
 class: center middle
 
+```javascript
+local concourse = import 'concourse.libsonnet';
+{
+  docker: concourse.DockerResource('serverspec-container', 
+                                   'sirech/dind-ruby', tag = '2.6.3'),
+}
+```
+
+```javascript
+{
+   "docker": {
+      "name": "serverspec-container",
+      "source": {
+         "repository": "sirech/dind-ruby",
+         "tag": "2.6.3"
+      },
+      "type": "docker-image"
+   }
+}
+```
+
+???
+
+Here is an example to see what we are outputting
+
+
+---
+
+class: center middle
+
 ### github.com/sirech/concourse-jsonnet-utils
 
 ???
@@ -705,6 +739,8 @@ class: center middle
 local source = 'git';
 local container = 'dev-container';
 
+local concourse = import 'concourse.libsonnet';
+
 local Inputs(dependencies = []) = concourse.Parallel(
   [concourse.Get(s, dependencies = dependencies) 
     for s in [source, container]]
@@ -718,7 +754,13 @@ class: center middle
 local Task(name, file = name, image = container, params = {}) = {
   task: name,
   image: image,
-  params: { CI: true } + params,
+  params: { 
+    CI_AWS_ACCESS_KEY_ID: ((aws-access-key-id)),
+    CI_AWS_SECRET_ACCESS_KEY: ((aws-secret-access-key)),
+    MODULE: module,
+    PRODUCT: product,
+    CI: true
+  } + params,
   file: '%s/pipeline/tasks/%s/task.yml' % [source, file]
 };
 ```
@@ -757,6 +799,8 @@ class: center middle
 class: center middle
 
 ```python
+local concourse = import 'concourse.libsonnet';
+
 concourse.Job('lint', plan = [
   Inputs('prepare'),
   concourse.Parallel(
@@ -780,18 +824,20 @@ class: center middle
 
 ---
 
+class: center middle full-height
+background-image: url(images/pipeline-definition.png)
+
+???
+
+to give you an idea, here is the full pipeline definition
+
+---
+
 class: impact
 
 .impact-wrapper[
 # Scaling up
 ]
-
----
-
-class: center middle
-
-## First goal
-### Generate one pipeline programmatically
 
 ---
 
@@ -836,10 +882,6 @@ class: center middle
 ```python
 local config = std.extVar('CONFIG')
 ```
-
----
-
-class: center middle
 
 ```console
 # Convert the config to JSON and merge it, so that values are overriden
