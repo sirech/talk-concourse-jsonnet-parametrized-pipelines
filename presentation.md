@@ -151,15 +151,6 @@ And if there is not enough complexity yet, we have multiple of these. To isolate
 
 ---
 
-class: center middle full-width
-background-image: url(images/complexity.jpg)
-
-???
-
-If the point is not clear by now, this a whole lot of complexity
-
----
-
 class: impact full-width
 
 .impact-wrapper[
@@ -310,15 +301,6 @@ class: center middle
 ???
 
 The pipeline doesn't do much more than build the dependencies between different modules and orchestrate the execution of scripts that we can also run locally
-
----
-
-class: center middle full-width
-background-image: url(images/pipeline.png)
-
-???
-
-In the end an infra pipeline will end up looking like this
 
 ---
 
